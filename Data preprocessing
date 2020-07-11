@@ -1,0 +1,11 @@
+# artifically generated data of new movies
+
+def generate_data(data, bit_rate_step=50, max_bitrate = 8000, min_birate = 50, widths=[1920,1280,  960, 768, 640,  416], heights = [1080,720, 540, 432, 360, 234], col_names=['e_height','e_width', 't_average_bitrate']):
+    generated=pd.DataFrame()
+    for bitrate in range(min_birate,max_bitrate,bit_rate_step):
+        for i in range (len(widths)):
+            data[col_names[0]]=heights[i]
+            data[col_names[1]]=widths[i]
+            data[col_names[2]]=bitrate
+            generated = generated.append(data, ignore_index = True)
+    return generated
