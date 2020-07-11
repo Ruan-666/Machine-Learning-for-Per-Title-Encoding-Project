@@ -1,0 +1,16 @@
+def get_data_at_highest_vmaf_per_bps(data):
+    best_per_bitrate = pd.DataFrame(columns = data.columns)
+    for bitrate in data['t_average_bitrate'].unique():
+        df_tmp = data[data['t_average_bitrate']==bitrate]
+        best_vmaf = df_tmp[df_tmp['t_average_vmaf']==df_tmp['t_average_vmaf'].max()]
+        best_per_bitrate = best_per_bitrate.append(best_vmaf)
+    return best_per_bitrate
+
+
+def get_encoding_latter(best_per_bitrate):
+    sorted_df = best_per_bitrate.sort_values('t_average_vmaf')
+    jnd_df = pd.DataFrame(sorted_df.head(n=1))
+    for i in range(1,len(sorted_df)):
+        if not (sorted_df.iloc[i,-1]-jnd_df.iloc[-1,-1])<6:
+            jnd_df = jnd_df.append(sorted_df.iloc[i,:], ignore_index = True)
+    return jnd_df
