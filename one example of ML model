@@ -3,9 +3,7 @@ import pandas as pd
 from sklearn import metrics
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
-import lightgbm as lgb
-from sklearn.model_selection import GridSearchCV
-from scipy.spatial import ConvexHull, convex_hull_plot_2d
+from sklearn.ensemble import GradientBoostingRegressor
 import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
@@ -28,21 +26,13 @@ X_train.drop(['s_storage_size', 's_duration'], axis = 1, inplace=True)
 X_test.drop(['s_storage_size', 's_duration'], axis = 1, inplace=True)
 
 
-estimator = lgb.LGBMRegressor()
+gbr = GBR(n_estimators = 50, max_depth = 55, min_samples_split = 2,learning_rate=0.6,loss = 'ls')
+gbr.fit(X_train, y_train)
+y_pred = gbr.predict(X_test)
 
-# this is the way I tested which parametes might be the best ones
-param_grid = {
-    'max_depth': [20],
-    'num_leaves': [20],
-    'learning_rate': [0.1],
-    'n_estimators': [9000]
-}
 
-gbm = GridSearchCV(estimator, param_grid, cv=3)
-gbm.fit(X_train, y_train)
-
-print('Best parameters found by grid search are:', gbm.best_params_)
-y_pred = gbm.predict(X_test)
+print('Best parameters found by grid search are:', gbr)
+y_pred = gbr.predict(X_test)
 
 
 # have a look at the results:
