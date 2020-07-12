@@ -1,0 +1,31 @@
+#get the x,y values from the predicted convex hull
+x_new=best_encodings_per_bitrate['t_average_bitrate']
+y_new=best_encodings_per_bitrate['t_average_vmaf']
+
+
+all_points =[]
+unique_resoultion = data.groupby(['e_width', 'e_height'], as_index = False).size()
+fig=plt.figure(figsize=(10,5))
+ax = plt.subplot(111)
+for x in unique_resoultion.index[:]:
+    width,height = x
+    x_bitrate = sorted(data['t_average_bitrate'][(data['e_width']==width) & (data['e_height']==height)])
+    y_vmaf = sorted(data['t_average_vmaf'][(data['e_width']==width) & (data['e_height']==height)])
+    for i in range(len(x_bitrate)):
+        all_points.append([x_bitrate[i], y_vmaf[i]])
+    
+    ax.plot(x_bitrate, y_vmaf, label = '{} X {}'.format(width,height))
+
+#plot convex hull of the actual data
+all_points = np.array(all_points)
+hull = ConvexHull(all_points)
+for simplex in hull.simplices:
+    ax.plot(all_points[simplex, 0], all_points[simplex, 1], 'k-')
+
+#plot predicted convex hull
+ax.plot(x_new,y_new, color = 'fuchsia', label = "predicted convex hull")
+plt.xlabel("Bitrate")
+plt.ylabel("VMAF")
+ax.legend()
+plt.xlim(0,8000)
+plt.show()
